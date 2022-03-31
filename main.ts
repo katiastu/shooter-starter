@@ -147,10 +147,7 @@ function level1 () {
     MyPlayer()
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-    if (gameMode == true) {
-        gameMode = true
-        MyPlayer()
-    }
+	
 })
 function GenerateEnemy () {
     Rock = sprites.create(img`
@@ -203,3 +200,11 @@ let projectile: Sprite = null
 let gameMode = false
 scene.setBackgroundImage(assets.image`woods`)
 gameMode = true
+game.onUpdate(function () {
+    GenerateEnemy()
+})
+game.onUpdateInterval(500, function () {
+    if (gameMode == true) {
+        GenerateEnemy()
+    }
+})
