@@ -22,6 +22,7 @@ controller.B.onEvent(ControllerButtonEvent.Pressed, function () {
 })
 function level1 () {
     current_level = 1
+    scene.cameraFollowSprite(mySprite)
     scene.setBackgroundImage(img`
         dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
         dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd
@@ -144,10 +145,15 @@ function level1 () {
         4444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
         4444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444444
         `)
+    tiles.setCurrentTilemap(tilemap`level1`)
     MyPlayer()
 }
 controller.A.onEvent(ControllerButtonEvent.Pressed, function () {
-	
+    gameMode = true
+    MyPlayer()
+    if (gameMode == true) {
+    	
+    }
 })
 function GenerateEnemy () {
     Rock = sprites.create(img`
@@ -168,7 +174,7 @@ function GenerateEnemy () {
         . f d d f d d f d d b e f f f f 
         . . f f f f f f f f f f f f f . 
         `, SpriteKind.Enemy)
-    Rock.setPosition(11, 90)
+    Rock.setPosition(145, randint(0, 110))
     Rock.setVelocity(-50, 0)
 }
 function MyPlayer () {
@@ -192,17 +198,29 @@ function MyPlayer () {
         `, SpriteKind.Player)
     controller.moveSprite(mySprite, 100, 100)
     mySprite.setStayInScreen(true)
+    info.setLife(10)
+    info.setScore(0)
 }
+sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (sprite, otherSprite) {
+    music.smallCrash.play()
+    otherSprite.destroy()
+    info.changeScoreBy(1)
+})
+/**
+ * Kolizja
+ */
+sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (sprite, otherSprite) {
+    music.bigCrash.play()
+    mySprite.destroy()
+    info.changeLifeBy(-1)
+})
 let Rock: Sprite = null
 let current_level = 0
 let mySprite: Sprite = null
 let projectile: Sprite = null
 let gameMode = false
 scene.setBackgroundImage(assets.image`woods`)
-gameMode = true
-game.onUpdate(function () {
-    GenerateEnemy()
-})
+gameMode = false
 game.onUpdateInterval(500, function () {
     if (gameMode == true) {
         GenerateEnemy()
